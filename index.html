@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RefGAP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root,:root[data-theme="dark"]{color-scheme:light;
+  --bg:#fbfaf7; --surface:#ffffff; --ink:#1b1a24; --ink-2:#4a4858; --ink-3:#8a8898;
+  --line:#e8e5dd; --accent:#5a3fd0; --accent-soft:#eeeafd; --edit:#1f8a55; --edit-soft:#e3f4ea;
+  --keep:#c46a12; --keep-soft:#fbeedd; --bad:#c23a3a; --radius:14px;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --serif:"Source Serif 4",Georgia,"Songti SC",serif;
+  --track:#f1efe9; --chipbg:#ebe8e0; --tie:#d9d6ce; --navbg:rgba(251,250,247,.86); --on-ink:#ffffff;
+  --glow1:#ece7ff; --glow2:#e6f5ec; --edit-strong:#2a9d6a; --media:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:24px}
+section{padding-block:72px}
+h2{font-family:var(--serif);text-wrap:balance;font-size:clamp(26px,3.2vw,34px);line-height:1.2;letter-spacing:-.02em;margin:0 0 12px}
+h3{font-size:18px;margin:0 0 6px}
+.kicker{font:600 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.lead{font-size:18px;color:var(--ink-2);max-width:760px;margin:0 0 32px}
+.muted{color:var(--ink-3)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navbg);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:24px;height:56px}
+nav .brand{font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+nav .brand span{color:var(--accent)}
+nav .links{display:flex;gap:20px;margin-left:auto;font-size:14px;overflow-x:auto}
+nav .links a{color:var(--ink-2);white-space:nowrap}
+nav .links a:hover{color:var(--accent)}
+
+/* hero */
+.hero{padding-block:80px 56px;background:
+  radial-gradient(900px 380px at 85% -10%,var(--glow1) 0,transparent 70%),
+  radial-gradient(700px 300px at 0% 10%,var(--glow2) 0,transparent 70%)}
+.hero h1{font-family:var(--serif);font-weight:700;text-wrap:balance;font-size:clamp(28px,4vw,44px);line-height:1.15;letter-spacing:-.035em;margin:0 0 18px;max-width:900px}
+.hero h1 .gap{color:var(--accent)}
+.authors{font-size:16px;color:var(--ink-2);margin-bottom:4px}
+.authors sup{color:var(--ink-3)}
+.affil{font-size:14px;color:var(--ink-3);margin-bottom:28px}
+.tldr{font-size:19px;color:var(--ink-2);max-width:780px;margin:0 0 36px}
+.tldr b{color:var(--ink)}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.btn:hover{border-color:var(--accent)}
+.btn.soon{color:var(--ink-3);cursor:default}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.pillar{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 24px 22px;position:relative;overflow:hidden}
+.pillar::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--c)}
+.pillar .tag{font:600 12px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+.pillar .big{font:800 40px/1.1 var(--sans);letter-spacing:-.03em;margin:12px 0 4px}
+.pillar .big small{font-size:16px;font-weight:600;color:var(--ink-2);letter-spacing:0;margin-left:6px}
+.pillar p{margin:6px 0 0;color:var(--ink-2);font-size:14.5px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:18px}
+.stat{background:var(--surface);padding:20px 22px}
+.stat .v{font:700 30px/1.1 var(--mono);letter-spacing:-.02em;color:var(--edit)}
+.stat .l{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+
+/* problem */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.bars{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+.bars h4{margin:0 0 2px;font-size:15px}
+.bars .sub{font-size:13px;color:var(--ink-3);margin-bottom:16px}
+.brow{display:grid;grid-template-columns:128px 1fr 44px;align-items:center;gap:10px;font-size:13.5px;margin:9px 0}
+.btrack{position:relative;height:14px;background:var(--track);border-radius:4px}
+.bfill{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--keep)}
+.bfill.ok{background:var(--ink-3)}
+.bline{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink);opacity:.55}
+.blegend{font-size:12px;color:var(--ink-3);margin-top:12px}
+.callout{font-size:clamp(40px,6vw,64px);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--keep)}
+
+/* method */
+.figure{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;overflow-x:auto}
+.figure img{min-width:720px;width:100%}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+.step .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--accent-soft);color:var(--accent);margin-bottom:12px}
+.step p{margin:0;color:var(--ink-2);font-size:14.5px}
+.eq{font-family:var(--mono);font-size:13px;background:var(--track);border-radius:8px;padding:8px 10px;margin-top:10px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.eq .e{color:var(--edit)} .eq .k{color:var(--keep)}
+
+/* demo */
+#demos{background:var(--surface);border-block:1px solid var(--line)}
+.controls{display:flex;flex-direction:column;gap:14px;margin-bottom:26px}
+.ctl-label{font:600 11.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{font:600 14px var(--sans);padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.seg button:hover{border-color:var(--accent);color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg button .chip{font:600 10.5px/1 var(--sans);padding:3px 6px;border-radius:4px;background:var(--chipbg);color:var(--ink-2)}
+.seg button[aria-pressed=true] .chip{background:var(--ink-2);color:var(--on-ink)}
+.seg button .chip.ho{background:var(--edit-soft);color:var(--edit)}
+.seg button[aria-pressed=true] .chip.ho{background:var(--edit-strong);color:#fff}
+.task-desc{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:baseline;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:18px;font-size:14.5px;color:var(--ink-2)}
+.task-desc b{color:var(--ink)}
+.task-desc .metric{margin-left:auto;font-family:var(--mono);font-size:13.5px}
+.task-desc .metric .up{color:var(--edit);font-weight:600}
+.task-desc .metric .down{color:var(--bad);font-weight:600}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card video{cursor:pointer}
+.card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.card .media{background:var(--media)}
+.card .media img,.card .media video{width:100%;height:auto}
+.legend4{display:grid;grid-template-columns:repeat(4,1fr);font-size:12px;color:var(--ink-3);text-align:center;padding:8px 0;border-top:1px solid var(--line);background:var(--bg)}
+.legend4 span:last-child{color:var(--accent);font-weight:600}
+.hint{font-size:13px;color:var(--ink-3);margin-top:14px}
+
+/* results */
+.chart-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+.dumb{margin-top:10px}
+.drow{display:grid;grid-template-columns:150px 1fr 70px;gap:12px;align-items:center;height:38px;font-size:14px}
+.drow .name{display:flex;align-items:center;gap:8px}
+.drow .name .chip{font:600 10px/1 var(--sans);padding:3px 5px;border-radius:4px;background:var(--edit-soft);color:var(--edit)}
+.dtrack{position:relative;height:100%}
+.dtrack::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+.dseg{position:absolute;top:50%;height:4px;margin-top:-2px;border-radius:2px;background:var(--edit);opacity:.35;transition:all .5s ease}
+.dseg.neg{background:var(--bad)}
+.dot{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;transition:left .5s ease}
+.dot.b{background:var(--surface);border:2px solid var(--ink-3)}
+.dot.o{background:var(--edit);box-shadow:0 0 0 3px var(--surface)}
+.dot.o.neg{background:var(--bad)}
+.drow .delta{font:600 13px var(--mono);text-align:right;color:var(--edit)}
+.drow .delta.neg{color:var(--bad)}
+.dsep{border-top:1px dashed var(--line);margin:6px 0 4px;font-size:11px;color:var(--ink-3);padding-top:6px;letter-spacing:.08em;text-transform:uppercase}
+.axis{display:grid;grid-template-columns:150px 1fr 70px;gap:12px;font:500 11px var(--mono);color:var(--ink-3)}
+.axis .ticks{display:flex;justify-content:space-between}
+.klegend{display:flex;gap:18px;font-size:12.5px;color:var(--ink-2);margin-top:12px;flex-wrap:wrap}
+.klegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--ink-3);margin-top:12px}
+
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-top:18px}
+.hbar{margin:14px 0}
+.hbar .t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.hbar .t .num{font-size:12.5px;color:var(--ink-2)}
+.stack{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--track)}
+.stack div{height:100%}
+.s-w{background:var(--edit)} .s-t{background:var(--tie)} .s-l{background:var(--bad)}
+.vs{display:grid;gap:10px;margin-top:8px}
+.vs .row{display:grid;grid-template-columns:1fr auto auto;gap:14px;font-size:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.vs .row:last-child{border-bottom:0}
+.pill{font:600 12px var(--mono);padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+
+footer{padding-block:48px 64px;border-top:1px solid var(--line);font-size:14px;color:var(--ink-3)}
+pre.bib{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;font:13px/1.55 var(--mono);color:var(--ink-2);overflow-x:auto}
+
+.hero{padding-block:44px 28px}
+.hero h1{margin-bottom:12px}
+.affil-inline{color:var(--ink-3);font-size:13.5px;margin-left:10px}
+.hero .tldr{font-size:17px;margin:14px 0 22px}
+.pillars{margin-top:0;gap:12px}
+.pillar{padding:14px 18px 14px}
+.pillar p{margin-top:6px;font-size:14.5px}
+.pillar p b{font-size:20px;color:var(--ink);margin-right:4px}
+#demos{padding-block:40px 64px}
+.controls{gap:10px;margin-bottom:16px}
+.task-desc{padding:10px 16px;margin-bottom:14px}
+@media (max-width:880px){
+  .pillars,.steps,.gallery{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .two,.grid2{grid-template-columns:1fr;gap:28px}
+  nav .links{display:none}
+  .drow,.axis{grid-template-columns:110px 1fr 58px}
+  .brow{grid-template-columns:110px 1fr 40px}
+  .task-desc .metric{margin-left:0}
+  section{padding-block:52px}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media (prefers-reduced-motion:reduce){.dseg,.dot{transition:none}}
+</style>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top">Ref<span>GAP</span></a>
+  <div class="links">
+    <a href="#demos">Demos</a><a href="#problem">Problem</a><a href="#method">Method</a><a href="#results">Results</a><a href="#cite">Citation</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <h1>Mind the <span class="gap">RefGAP</span>: Correcting Reference Attention in Diffusion-Based Visual Editing</h1>
+  <div class="authors">Yanan Wang<sup>1</sup> &nbsp;·&nbsp; Shengcai Liao<sup>2</sup> &nbsp;·&nbsp; Guangyi Liu<sup>1</sup> &nbsp;·&nbsp; Xiaodan Liang<sup>1,3</sup> &nbsp;<span class="affil-inline"><sup>1</sup>MBZUAI <sup>2</sup>UAEU <sup>3</sup>SYSU</span></div>
+  <p class="tldr">Diffusion editors often <b>barely attend to the reference</b>. RefGAP measures that attention on the fly and <b>boosts it inside the edit, suppresses it outside</b>.</p>
+  <div class="pillars">
+    <div class="pillar" style="--c:var(--accent)"><div class="tag">Training-free</div><p><b>0</b> weight updates · plug-in logit offset at inference</p></div>
+    <div class="pillar" style="--c:var(--edit)"><div class="tag">Cross-model</div><p><b>7</b> image &amp; video editors · 3 never seen in calibration</p></div>
+    <div class="pillar" style="--c:var(--keep)"><div class="tag">Cross-task</div><p><b>4</b> tasks · one config tuned only on head swap</p></div>
+  </div>
+</div></header>
+
+<section id="demos"><div class="wrap">
+  <h2>Same settings, every model, every task</h2>
+  <p class="lead" style="font-size:16px;margin-bottom:20px">Each example shows <b>Reference · Input · Base · RefGAP</b>. Pick a task and an editor — the configuration never changes. Videos loop together; click any clip to pause or resume all.</p>
+
+  <div class="controls">
+    <div><div class="ctl-label">Task</div><div class="seg" id="taskSeg"></div></div>
+    <div><div class="ctl-label">Editor</div><div class="seg" id="modelSeg"></div></div>
+  </div>
+  <div class="task-desc" id="taskDesc"></div>
+  <div class="gallery" id="gallery"></div>
+  <p class="hint">Examples are drawn from test clips where RefGAP improves the task metric (and, for identity tasks, keypoint error does not worsen by more than 0.01).</p>
+</div></section>
+
+<section id="problem"><div class="wrap two">
+  <div>
+    <div class="kicker">The problem</div>
+    <h2>Editors see the reference — but hardly attend to it</h2>
+    <p class="lead" style="margin-bottom:20px">In-context editors put reference tokens in the same attention sequence as the content being edited. Yet when we measure the share of attention that edit-region queries give to the reference, it is often far below what even uniform attention would give.</p>
+    <div class="callout">&lt;1%</div>
+    <p class="muted" style="margin-top:8px">of edit-region attention mass goes to the reference in LoomVideo.</p>
+  </div>
+  <div class="bars" id="ubars">
+    <h4>Edit-region reference attention vs. uniform</h4>
+    <div class="sub">u<sub>edit</sub> = measured share ÷ uniform share · head-swap validation · line = 1.0</div>
+  </div>
+</div></section>
+
+<section id="method"><div class="wrap">
+  <div class="kicker">Method</div>
+  <h2>Measure, then correct — two-sided and online</h2>
+  <p class="lead">At every selected layer and denoising step, RefGAP reads the reference-attention mass for the edit region (E) and the keep region (K), and adds a single scalar to the reference-key logits of each query.</p>
+  <div class="figure"><img src="assets/fig/pipeline.jpg" alt="RefGAP pipeline: measure reference attention per region, compute dynamic bias, correct reference logits" loading="lazy"></div>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Measure</h3><p>Average each query's attention on reference keys, separately over edit and keep regions.</p><div class="eq">ρ̄<sub>edit</sub>, ρ̄<sub>keep</sub></div></div>
+    <div class="step"><div class="n">2</div><h3>Set the bias</h3><p>Low reference attention in the edit → larger boost. Keep region gets a suppressing offset so the change stays local.</p><div class="eq"><span class="e">b<sub>edit</sub> = +γ<sub>edit</sub>·log(1/ρ̄<sub>edit</sub>)</span><br><span class="k">b<sub>keep</sub> = −γ<sub>keep</sub>·log(1/ρ̄<sub>keep</sub>)</span></div></div>
+    <div class="step"><div class="n">3</div><h3>Correct the logits</h3><p>Shift reference logits only; relative weights inside each key group are preserved. A fixed rule picks all layers or the second half.</p><div class="eq">s<sub>ij</sub> ← s<sub>ij</sub> + b<sub>g</sub>, &nbsp;j ∈ R</div></div>
+  </div>
+  <p class="note">Shared everywhere: γ<sub>edit</sub>=0.6, γ<sub>keep</sub>=0.8, τ<sub>B</sub>=2.7, τ<sub>b</sub>=3.7. A new editor only needs one profiling run to pick its layer set.</p>
+</div></section>
+
+
+
+<section id="results"><div class="wrap">
+  <div class="kicker">Results</div>
+  <h2>Consistent gains without per-model tuning</h2>
+  <p class="lead">Base → RefGAP on full test sets. Held-out editors were never used for calibration.</p>
+  <div class="stats" style="margin:0 0 18px">
+    <div class="stat"><div class="v">+0.199</div><div class="l">mean identity gain, head swap (7 editors)</div></div>
+    <div class="stat"><div class="v">+0.237</div><div class="l">mean identity gain, face swap (7 editors)</div></div>
+    <div class="stat"><div class="v">≥86%</div><div class="l">head-swap replacement rate on every applicable editor</div></div>
+    <div class="stat"><div class="v">7 / 7</div><div class="l">editors with better try-on garment fidelity</div></div>
+  </div>
+
+
+  <div class="chart-card">
+    <div class="seg" id="metricSeg"></div>
+    <div class="dumb" id="dumb"></div>
+    <div class="klegend"><span><i style="background:var(--surface);border:2px solid var(--ink-3)"></i>Base</span><span><i style="background:var(--edit)"></i>RefGAP</span><span><i style="background:var(--bad)"></i>RefGAP (lower)</span></div>
+    <div class="note" id="metricNote"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="chart-card">
+      <h3>Human evaluation — reference fidelity</h3>
+      <div class="muted" style="font-size:13px">54 raters · 219 items · judgments: RefGAP better / tie / Base better</div>
+      <div id="human"></div>
+      <div class="klegend"><span><i style="background:var(--edit)"></i>RefGAP better</span><span><i style="background:var(--tie)"></i>Tie</span><span><i style="background:var(--bad)"></i>Base better</span></div>
+    </div>
+    <div class="chart-card">
+      <h3>vs. hand-tuned constant bias</h3>
+      <div class="muted" style="font-size:13px">A Diptych-style constant edit bias, swept separately per editor. Head-swap ID, 1,040 test clips.</div>
+      <div class="vs" id="vs"></div>
+      <p class="note">RefGAP matches per-model tuned constants (Δ ≤ 0.006) — without any strength sweep.</p>
+    </div>
+  </div>
+</div></section>
+
+<footer id="cite"><div class="wrap">
+  <div class="kicker">Citation</div>
+<pre class="bib">@article{wang2026refgap,
+  title  = {Mind the RefGAP: Correcting Reference Attention in Diffusion-Based Visual Editing},
+  author = {Wang, Yanan and Liao, Shengcai and Liu, Guangyi and Liang, Xiaodan},
+  year   = {2026}
+}</pre>
+  <p>Demo inputs come from public benchmarks (HeadSwapBench, FaceForensics++, ViViD, SUN397) and are shown for research purposes only.</p>
+</div></footer>
+
+<script>
+const MEDIA = {"joyai": {"headswap": [{"v": "assets/media/joyai/headswap/1.mp4", "p": "assets/media/joyai/headswap/1_poster.jpg"}, {"v": "assets/media/joyai/headswap/2.mp4", "p": "assets/media/joyai/headswap/2_poster.jpg"}, {"v": "assets/media/joyai/headswap/3.mp4", "p": "assets/media/joyai/headswap/3_poster.jpg"}, {"v": "assets/media/joyai/headswap/4.mp4", "p": "assets/media/joyai/headswap/4_poster.jpg"}], "faceswap": [{"v": "assets/media/joyai/faceswap/1.mp4", "p": "assets/media/joyai/faceswap/1_poster.jpg"}, {"v": "assets/media/joyai/faceswap/2.mp4", "p": "assets/media/joyai/faceswap/2_poster.jpg"}, {"v": "assets/media/joyai/faceswap/3.mp4", "p": "assets/media/joyai/faceswap/3_poster.jpg"}, {"v": "assets/media/joyai/faceswap/4.mp4", "p": "assets/media/joyai/faceswap/4_poster.jpg"}], "tryon": [{"v": "assets/media/joyai/tryon/1.mp4", "p": "assets/media/joyai/tryon/1_poster.jpg"}, {"v": "assets/media/joyai/tryon/2.mp4", "p": "assets/media/joyai/tryon/2_poster.jpg"}, {"v": "assets/media/joyai/tryon/3.mp4", "p": "assets/media/joyai/tryon/3_poster.jpg"}, {"v": "assets/media/joyai/tryon/4.mp4", "p": "assets/media/joyai/tryon/4_poster.jpg"}], "bgswap": [{"v": "assets/media/joyai/bgswap/1.mp4", "p": "assets/media/joyai/bgswap/1_poster.jpg"}, {"v": "assets/media/joyai/bgswap/2.mp4", "p": "assets/media/joyai/bgswap/2_poster.jpg"}, {"v": "assets/media/joyai/bgswap/3.mp4", "p": "assets/media/joyai/bgswap/3_poster.jpg"}, {"v": "assets/media/joyai/bgswap/4.mp4", "p": "assets/media/joyai/bgswap/4_poster.jpg"}]}, "loom": {"headswap": [{"v": "assets/media/loom/headswap/1.mp4", "p": "assets/media/loom/headswap/1_poster.jpg"}, {"v": "assets/media/loom/headswap/2.mp4", "p": "assets/media/loom/headswap/2_poster.jpg"}, {"v": "assets/media/loom/headswap/3.mp4", "p": "assets/media/loom/headswap/3_poster.jpg"}, {"v": "assets/media/loom/headswap/4.mp4", "p": "assets/media/loom/headswap/4_poster.jpg"}], "faceswap": [{"v": "assets/media/loom/faceswap/1.mp4", "p": "assets/media/loom/faceswap/1_poster.jpg"}, {"v": "assets/media/loom/faceswap/2.mp4", "p": "assets/media/loom/faceswap/2_poster.jpg"}, {"v": "assets/media/loom/faceswap/3.mp4", "p": "assets/media/loom/faceswap/3_poster.jpg"}, {"v": "assets/media/loom/faceswap/4.mp4", "p": "assets/media/loom/faceswap/4_poster.jpg"}], "tryon": [{"v": "assets/media/loom/tryon/1.mp4", "p": "assets/media/loom/tryon/1_poster.jpg"}, {"v": "assets/media/loom/tryon/2.mp4", "p": "assets/media/loom/tryon/2_poster.jpg"}, {"v": "assets/media/loom/tryon/3.mp4", "p": "assets/media/loom/tryon/3_poster.jpg"}, {"v": "assets/media/loom/tryon/4.mp4", "p": "assets/media/loom/tryon/4_poster.jpg"}], "bgswap": [{"v": "assets/media/loom/bgswap/1.mp4", "p": "assets/media/loom/bgswap/1_poster.jpg"}, {"v": "assets/media/loom/bgswap/2.mp4", "p": "assets/media/loom/bgswap/2_poster.jpg"}, {"v": "assets/media/loom/bgswap/3.mp4", "p": "assets/media/loom/bgswap/3_poster.jpg"}, {"v": "assets/media/loom/bgswap/4.mp4", "p": "assets/media/loom/bgswap/4_poster.jpg"}]}, "klein": {"headswap": [{"i": "assets/media/klein/headswap/1.jpg"}, {"i": "assets/media/klein/headswap/2.jpg"}, {"i": "assets/media/klein/headswap/3.jpg"}, {"i": "assets/media/klein/headswap/4.jpg"}], "faceswap": [{"i": "assets/media/klein/faceswap/1.jpg"}, {"i": "assets/media/klein/faceswap/2.jpg"}, {"i": "assets/media/klein/faceswap/3.jpg"}, {"i": "assets/media/klein/faceswap/4.jpg"}], "tryon": [{"i": "assets/media/klein/tryon/1.jpg"}, {"i": "assets/media/klein/tryon/2.jpg"}, {"i": "assets/media/klein/tryon/3.jpg"}, {"i": "assets/media/klein/tryon/4.jpg"}], "bgswap": [{"i": "assets/media/klein/bgswap/1.jpg"}, {"i": "assets/media/klein/bgswap/2.jpg"}, {"i": "assets/media/klein/bgswap/3.jpg"}, {"i": "assets/media/klein/bgswap/4.jpg"}]}, "klein-base": {"headswap": [{"i": "assets/media/klein-base/headswap/1.jpg"}, {"i": "assets/media/klein-base/headswap/2.jpg"}, {"i": "assets/media/klein-base/headswap/3.jpg"}, {"i": "assets/media/klein-base/headswap/4.jpg"}], "faceswap": [{"i": "assets/media/klein-base/faceswap/1.jpg"}, {"i": "assets/media/klein-base/faceswap/2.jpg"}, {"i": "assets/media/klein-base/faceswap/3.jpg"}, {"i": "assets/media/klein-base/faceswap/4.jpg"}], "tryon": [{"i": "assets/media/klein-base/tryon/1.jpg"}, {"i": "assets/media/klein-base/tryon/2.jpg"}, {"i": "assets/media/klein-base/tryon/3.jpg"}, {"i": "assets/media/klein-base/tryon/4.jpg"}], "bgswap": [{"i": "assets/media/klein-base/bgswap/1.jpg"}, {"i": "assets/media/klein-base/bgswap/2.jpg"}, {"i": "assets/media/klein-base/bgswap/3.jpg"}, {"i": "assets/media/klein-base/bgswap/4.jpg"}]}, "vace": {"headswap": [{"v": "assets/media/vace/headswap/1.mp4", "p": "assets/media/vace/headswap/1_poster.jpg"}, {"v": "assets/media/vace/headswap/2.mp4", "p": "assets/media/vace/headswap/2_poster.jpg"}, {"v": "assets/media/vace/headswap/3.mp4", "p": "assets/media/vace/headswap/3_poster.jpg"}, {"v": "assets/media/vace/headswap/4.mp4", "p": "assets/media/vace/headswap/4_poster.jpg"}], "faceswap": [{"v": "assets/media/vace/faceswap/1.mp4", "p": "assets/media/vace/faceswap/1_poster.jpg"}, {"v": "assets/media/vace/faceswap/2.mp4", "p": "assets/media/vace/faceswap/2_poster.jpg"}, {"v": "assets/media/vace/faceswap/3.mp4", "p": "assets/media/vace/faceswap/3_poster.jpg"}, {"v": "assets/media/vace/faceswap/4.mp4", "p": "assets/media/vace/faceswap/4_poster.jpg"}], "tryon": [{"v": "assets/media/vace/tryon/1.mp4", "p": "assets/media/vace/tryon/1_poster.jpg"}, {"v": "assets/media/vace/tryon/2.mp4", "p": "assets/media/vace/tryon/2_poster.jpg"}, {"v": "assets/media/vace/tryon/3.mp4", "p": "assets/media/vace/tryon/3_poster.jpg"}, {"v": "assets/media/vace/tryon/4.mp4", "p": "assets/media/vace/tryon/4_poster.jpg"}], "bgswap": [{"v": "assets/media/vace/bgswap/1.mp4", "p": "assets/media/vace/bgswap/1_poster.jpg"}, {"v": "assets/media/vace/bgswap/2.mp4", "p": "assets/media/vace/bgswap/2_poster.jpg"}, {"v": "assets/media/vace/bgswap/3.mp4", "p": "assets/media/vace/bgswap/3_poster.jpg"}, {"v": "assets/media/vace/bgswap/4.mp4", "p": "assets/media/vace/bgswap/4_poster.jpg"}]}, "qwen": {"headswap": [{"i": "assets/media/qwen/headswap/1.jpg"}, {"i": "assets/media/qwen/headswap/2.jpg"}, {"i": "assets/media/qwen/headswap/3.jpg"}, {"i": "assets/media/qwen/headswap/4.jpg"}], "faceswap": [{"i": "assets/media/qwen/faceswap/1.jpg"}, {"i": "assets/media/qwen/faceswap/2.jpg"}, {"i": "assets/media/qwen/faceswap/3.jpg"}, {"i": "assets/media/qwen/faceswap/4.jpg"}], "tryon": [{"i": "assets/media/qwen/tryon/1.jpg"}, {"i": "assets/media/qwen/tryon/2.jpg"}, {"i": "assets/media/qwen/tryon/3.jpg"}, {"i": "assets/media/qwen/tryon/4.jpg"}], "bgswap": [{"i": "assets/media/qwen/bgswap/1.jpg"}, {"i": "assets/media/qwen/bgswap/2.jpg"}, {"i": "assets/media/qwen/bgswap/3.jpg"}, {"i": "assets/media/qwen/bgswap/4.jpg"}]}, "omnigen2": {"headswap": [{"i": "assets/media/omnigen2/headswap/1.jpg"}, {"i": "assets/media/omnigen2/headswap/2.jpg"}, {"i": "assets/media/omnigen2/headswap/3.jpg"}, {"i": "assets/media/omnigen2/headswap/4.jpg"}], "faceswap": [{"i": "assets/media/omnigen2/faceswap/1.jpg"}, {"i": "assets/media/omnigen2/faceswap/2.jpg"}, {"i": "assets/media/omnigen2/faceswap/3.jpg"}, {"i": "assets/media/omnigen2/faceswap/4.jpg"}], "tryon": [{"i": "assets/media/omnigen2/tryon/1.jpg"}, {"i": "assets/media/omnigen2/tryon/2.jpg"}, {"i": "assets/media/omnigen2/tryon/3.jpg"}, {"i": "assets/media/omnigen2/tryon/4.jpg"}], "bgswap": [{"i": "assets/media/omnigen2/bgswap/1.jpg"}, {"i": "assets/media/omnigen2/bgswap/2.jpg"}, {"i": "assets/media/omnigen2/bgswap/3.jpg"}, {"i": "assets/media/omnigen2/bgswap/4.jpg"}]}};
+const MODELS = [
+  {k:"joyai",n:"JoyAI-Video-Edit",t:"video",ho:false},
+  {k:"loom",n:"LoomVideo",t:"video",ho:false},
+  {k:"klein",n:"FLUX.2-klein",t:"image",ho:false},
+  {k:"klein-base",n:"FLUX.2-klein-base",t:"image",ho:false},
+  {k:"vace",n:"Wan-VACE",t:"video",ho:true},
+  {k:"qwen",n:"Qwen-Image-Edit",t:"image",ho:true},
+  {k:"omnigen2",n:"OmniGen2",t:"image",ho:true},
+];
+const TASKS = [
+  {k:"headswap",n:"Head swap",d:"Replace the whole head with the reference person; keep pose, expression and scene.",m:"ID"},
+  {k:"faceswap",n:"Face swap",d:"Transfer the reference face identity onto the input subject.",m:"ID"},
+  {k:"tryon",n:"Virtual try-on",d:"Dress the person in the reference garment.",m:"DINO"},
+  {k:"bgswap",n:"Background replacement",d:"Replace the scene with the reference background; keep the person.",m:"DINO"},
+];
+// Base -> RefGAP, Table 1 of the paper
+const RES = {
+  headswap:{joyai:[.507,.644],loom:[.608,.665],klein:[.726,.790],"klein-base":[.588,.799],vace:[.405,.729],qwen:[.609,.723],omnigen2:[.207,.693]},
+  faceswap:{joyai:[.282,.591],loom:[.449,.466],klein:[.704,.820],"klein-base":[.557,.831],vace:[.541,.818],qwen:[.518,.687],omnigen2:[.157,.656]},
+  tryon:{joyai:[.283,.298],loom:[.174,.183],klein:[.363,.372],"klein-base":[.409,.465],vace:[.171,.226],qwen:[.213,.248],omnigen2:[.277,.355]},
+  bgswap:{joyai:[.242,.286],loom:[.135,.258],klein:[.629,.630],"klein-base":[.632,.651],vace:[.008,.014],qwen:[.299,.042],omnigen2:[.245,.515]},
+};
+const METRIC_NOTES = {
+  headswap:"AdaFace identity similarity to ground truth. Mean gain +0.199; replacement rate reaches ≥86% on every applicable editor.",
+  faceswap:"AdaFace identity similarity to the reference face. Mean gain +0.237; OmniGen2 correct retrieval rises from 20% to 91%.",
+  tryon:"DINOv2 similarity of the garment region to the reference garment. Improves on all seven editors (mean +0.037).",
+  bgswap:"DINOv2 similarity of the background to the reference scene. Transfer is mixed: large gains on LoomVideo and OmniGen2, a clear drop on Qwen-Image-Edit.",
+};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let state = {task:"headswap", model:"omnigen2", metric:"headswap"};
+try{ const s = JSON.parse(localStorage.getItem("refgap-demo")||"{}"); Object.assign(state, s); }catch(e){}
+const save = () => { try{ localStorage.setItem("refgap-demo", JSON.stringify({task:state.task, model:state.model})); }catch(e){} };
+
+/* u_edit bars */
+(() => {
+  const U = [["LoomVideo",.22],["FLUX.2-klein-base",.22],["OmniGen2",.24],["Qwen-Image-Edit",.30],["FLUX.2-klein",.35],["Wan-VACE",1.79]];
+  const max = 2;
+  $("#ubars").insertAdjacentHTML("beforeend", U.map(([n,v]) =>
+    `<div class="brow"><span>${n}</span><div class="btrack"><div class="bfill ${v>=1?"ok":""}" style="width:${v/max*100}%"></div><div class="bline" style="left:${1/max*100}%"></div></div><span class="num">${v.toFixed(2)}</span></div>`).join("")
+    + `<div class="blegend">5 of 6 measured editors fall below uniform (orange). JoyAI is excluded: its reference share varies with its streaming KV cache.</div>`);
+})();
+
+/* demo gallery */
+function segButtons(el, items, cur, onPick, label){
+  el.innerHTML = items.map(it => `<button type="button" data-k="${it.k}" aria-pressed="${it.k===cur}">${esc(it.n)}${label?label(it):""}</button>`).join("");
+  el.onclick = e => { const b = e.target.closest("button"); if(b) onPick(b.dataset.k); };
+}
+let io;
+function renderDemo(){
+  segButtons($("#taskSeg"), TASKS, state.task, k => {state.task=k; save(); renderDemo();});
+  segButtons($("#modelSeg"), MODELS, state.model, k => {state.model=k; save(); renderDemo();},
+    m => `<span class="chip">${m.t}</span>${m.ho?'<span class="chip ho">held-out</span>':""}`);
+  const t = TASKS.find(x=>x.k===state.task), m = MODELS.find(x=>x.k===state.model);
+  const [b,o] = RES[t.k][m.k], d = o-b;
+  $("#taskDesc").innerHTML = `<span><b>${t.n}</b> — ${t.d}</span><span class="metric">${m.n} · ${t.m}: ${b.toFixed(3)} → ${o.toFixed(3)} <span class="${d>=0?"up":"down"}">(${d>=0?"+":"−"}${Math.abs(d).toFixed(3)})</span></span>`;
+  const items = (MEDIA[m.k]||{})[t.k] || [];
+  if(io) io.disconnect();
+  $("#gallery").innerHTML = items.map(it => `<div class="card"><div class="media">${
+      it.v ? `<video src="${it.v}" poster="${it.p}" muted loop playsinline preload="auto"></video>`
+           : `<img src="${it.i}" alt="${esc(t.n)} example on ${esc(m.n)}: reference, input, base, RefGAP" loading="lazy">`
+    }</div></div>`).join("") || `<p class="muted">No examples for this combination.</p>`;
+  const vids = [...document.querySelectorAll("#gallery video")];
+  if(!vids.length) return;
+  // start all clips together from frame 0 once every clip can play
+  let ready = 0, visible = false, started = false;
+  const playAll = () => { if(visible) vids.forEach(v => v.play().catch(()=>{})); };
+  const start = () => { started = true; vids.forEach(v => { v.currentTime = 0; }); playAll(); };
+  vids.forEach(v => {
+    const onReady = () => { if(++ready === vids.length) start(); };
+    if(v.readyState >= 3) onReady(); else v.addEventListener("canplay", onReady, {once:true});
+    v.addEventListener("click", () => v.paused ? playAll() : vids.forEach(x => x.pause()));
+  });
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  io = new IntersectionObserver(es => {
+    visible = es[0].isIntersecting;
+    if(visible){ if(started) playAll(); } else vids.forEach(v => v.pause());
+  }, {threshold:.15});
+  io.observe($("#gallery"));
+}
+renderDemo();
+
+/* results dumbbell */
+function renderDumb(){
+  segButtons($("#metricSeg"), TASKS.map(t=>({k:t.k,n:`${t.n} · ${t.m}`})), state.metric, k => {state.metric=k; renderDumb();});
+  const R = RES[state.metric];
+  const vals = Object.values(R).flat();
+  const lo = Math.max(0, Math.floor((Math.min(...vals)-.02)*10)/10), hi = Math.min(1, Math.ceil((Math.max(...vals)+.02)*10)/10);
+  const x = v => (v-lo)/(hi-lo)*100;
+  const row = m => { const [b,o] = R[m.k], neg = o<b, d = o-b;
+    return `<div class="drow"><div class="name">${m.n}${m.ho?'<span class="chip">held-out</span>':""}</div>
+      <div class="dtrack" title="${m.n}: ${b.toFixed(3)} → ${o.toFixed(3)}"><div class="dseg ${neg?"neg":""}" style="left:${x(Math.min(b,o))}%;width:${Math.abs(x(o)-x(b))}%"></div>
+      <div class="dot b" style="left:${x(b)}%"></div><div class="dot o ${neg?"neg":""}" style="left:${x(o)}%"></div></div>
+      <div class="delta ${neg?"neg":""}">${d>=0?"+":"−"}${Math.abs(d).toFixed(3)}</div></div>`; };
+  const ticks = [0,1,2,3,4].map(i => (lo+(hi-lo)*i/4).toFixed(2));
+  $("#dumb").innerHTML = MODELS.filter(m=>!m.ho).map(row).join("")
+    + `<div class="dsep">Held-out editors</div>` + MODELS.filter(m=>m.ho).map(row).join("")
+    + `<div class="axis"><span></span><div class="ticks">${ticks.map(t=>`<span>${t}</span>`).join("")}</div><span></span></div>`;
+  $("#metricNote").textContent = METRIC_NOTES[state.metric];
+}
+renderDumb();
+
+/* human eval */
+(() => {
+  const H = [["Head swap",157,24,3],["Face swap",278,96,8],["Virtual try-on",249,50,40],["Background repl.",127,121,29]];
+  $("#human").innerHTML = H.map(([n,w,t,l]) => { const s=w+t+l;
+    return `<div class="hbar"><div class="t"><span>${n}</span><span class="num">${w} / ${t} / ${l}</span></div>
+      <div class="stack" role="img" aria-label="${n}: ${w} RefGAP, ${t} tie, ${l} base"><div class="s-w" style="width:${w/s*100}%"></div><div class="s-t" style="width:${t/s*100}%"></div><div class="s-l" style="width:${l/s*100}%"></div></div></div>`; }).join("");
+})();
+
+/* vs constant */
+(() => {
+  const V = [["JoyAI-Video-Edit",.644,.644,"b=1.5"],["LoomVideo",.665,.671,"b=2.5"],["FLUX.2-klein",.790,.794,"b=2.0"],["FLUX.2-klein-base",.799,.801,"b=2.0"]];
+  $("#vs").innerHTML = `<div class="row muted" style="font-size:12px"><span>Editor</span><span>RefGAP</span><span>tuned constant</span></div>`
+    + V.map(([n,g,c,b]) => `<div class="row"><span>${n}</span><span class="pill">${g.toFixed(3)}</span><span class="num muted">${c.toFixed(3)} <small>(${b})</small></span></div>`).join("");
+})();
+</script>
+
+</html>
